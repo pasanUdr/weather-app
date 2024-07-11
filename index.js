@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('./models/User');
 const { getWeatherData } = require('./utils/weather');
-// const axios = require('axios');
 
 dotenv.config();
 

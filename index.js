@@ -4,6 +4,9 @@ const dotenv = require('dotenv');
 const User = require('./models/User');
 const { getWeatherData } = require('./utils/weather');
 
+const cron = require('node-cron');
+const { sendEmail } = require('./utils/mailer');
+
 dotenv.config();
 
 const app = express();
@@ -74,6 +77,22 @@ app.get('/users/:email/weather', async(req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
+});
+
+// Schedule task to run every 3 hours
+// cron.schedule('0 */3 * * *', async() => {
+cron.schedule('2 * * * * *', async() => {
+    const users = await User.find();
+    users.forEach(async(user) => {
+        const weather = await getWeatherData(user.location);
+        user.weatherData.push({ weather });
+        await user.save();
+
+        const emailSubject = `Weather Update for ${user.location}`;
+        const emailText = `Hello,\n\nThe current weather in ${user.location} is: ${weather}.\n\nBest regards,\nWeather API`;
+
+        await sendEmail(user.email, emailSubject, emailText);
+    });
 });
 
 

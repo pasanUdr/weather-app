@@ -80,8 +80,9 @@ app.get('/users/:email/weather', async(req, res) => {
 });
 
 // Schedule task to run every 3 hours
-// cron.schedule('0 */3 * * *', async() => {
-cron.schedule('2 * * * * *', async() => {
+cron.schedule('0 */3 * * *', async() => {
+
+    // cron.schedule('2 * * * * *', async() => { // Schedule task to run every 2 seconds for testing only
     const users = await User.find();
     users.forEach(async(user) => {
         const weather = await getWeatherData(user.location);
